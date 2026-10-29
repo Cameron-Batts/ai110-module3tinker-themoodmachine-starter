@@ -4,19 +4,23 @@ import re
 
 from dataset import POSITIVE_WORDS, NEGATIVE_WORDS
 
+POSITIVE_EMOJI = {"😂", "😊", "🙂", "😀", "😁", "😄", "😍", "❤"}
+NEGATIVE_EMOJI = {"😞", "😢", "😭", "😠", "😡", "😔", "💔"}
+
 
 class MoodAnalyzer:
     def __init__(self, positive_words=None, negative_words=None):
         if positive_words is None:
-            positive_words = POSITIVE_WORDS
+            positive_words = [*POSITIVE_WORDS, *POSITIVE_EMOJI]
         if negative_words is None:
-            negative_words = NEGATIVE_WORDS
+            negative_words = [*NEGATIVE_WORDS, *NEGATIVE_EMOJI]
 
         self.positive_words = {word.lower() for word in positive_words}
         self.negative_words = {word.lower() for word in negative_words}
 
     def preprocess(self, text):
-        return re.findall(r"[a-z]+(?:'[a-z]+)?", text.lower())
+        return [token.rstrip("\ufe0f") for token in re.findall(
+            r"[a-z]+(?:'[a-z]+)?|[😂😊🙂😀😁😄😍😞😢😭😠😡😔💔❤]\ufe0f?", text.lower())]
 
     def _word_scores(self, text):
         tokens = self.preprocess(text)

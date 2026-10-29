@@ -1,0 +1,214 @@
+{
+  "samples": 14,
+  "labels": [
+    "negative",
+    "neutral",
+    "mixed",
+    "positive"
+  ],
+  "rule_known_samples": {
+    "correct": 13,
+    "accuracy": 0.9285714285714286,
+    "predictions": [
+      "positive",
+      "negative",
+      "mixed",
+      "neutral",
+      "positive",
+      "negative",
+      "positive",
+      "positive",
+      "negative",
+      "mixed",
+      "positive",
+      "positive",
+      "neutral",
+      "positive"
+    ]
+  },
+  "ml_out_of_fold": {
+    "correct": 7,
+    "accuracy": 0.5,
+    "macro_f1": 0.4666666666666667,
+    "confusion_matrix": [
+      [
+        1,
+        0,
+        0,
+        3
+      ],
+      [
+        0,
+        0,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        2,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        4
+      ]
+    ],
+    "predictions": [
+      "positive",
+      "positive",
+      "mixed",
+      "positive",
+      "positive",
+      "positive",
+      "negative",
+      "neutral",
+      "negative",
+      "mixed",
+      "positive",
+      "positive",
+      "positive",
+      "positive"
+    ],
+    "folds": [
+      {
+        "fold": 1,
+        "train_indices": [
+          3,
+          5,
+          6,
+          8,
+          9,
+          11,
+          13
+        ],
+        "test_indices": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          10,
+          12
+        ],
+        "vocabulary_size": 23
+      },
+      {
+        "fold": 2,
+        "train_indices": [
+          0,
+          1,
+          2,
+          4,
+          7,
+          10,
+          12
+        ],
+        "test_indices": [
+          3,
+          5,
+          6,
+          8,
+          9,
+          11,
+          13
+        ],
+        "vocabulary_size": 31
+      }
+    ]
+  },
+  "cases": [
+    {
+      "text": "I love this class so much",
+      "label": "positive",
+      "rule_prediction": "positive",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "Today was a terrible day",
+      "label": "negative",
+      "rule_prediction": "negative",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "Feeling tired but kind of hopeful",
+      "label": "mixed",
+      "rule_prediction": "mixed",
+      "oof_prediction": "mixed"
+    },
+    {
+      "text": "This is fine",
+      "label": "neutral",
+      "rule_prediction": "neutral",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "So excited for the weekend",
+      "label": "positive",
+      "rule_prediction": "positive",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "I am not happy about this",
+      "label": "negative",
+      "rule_prediction": "negative",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "Lowkey proud of myself today",
+      "label": "positive",
+      "rule_prediction": "positive",
+      "oof_prediction": "negative"
+    },
+    {
+      "text": "This party is lit",
+      "label": "positive",
+      "rule_prediction": "positive",
+      "oof_prediction": "neutral"
+    },
+    {
+      "text": "That was frustrating and annoying",
+      "label": "negative",
+      "rule_prediction": "negative",
+      "oof_prediction": "negative"
+    },
+    {
+      "text": "Feeling grateful but tired",
+      "label": "mixed",
+      "rule_prediction": "mixed",
+      "oof_prediction": "mixed"
+    },
+    {
+      "text": "I absolutely love getting stuck in traffic",
+      "label": "negative",
+      "rule_prediction": "positive",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "😂",
+      "label": "positive",
+      "rule_prediction": "positive",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "The meeting starts at noon",
+      "label": "neutral",
+      "rule_prediction": "neutral",
+      "oof_prediction": "positive"
+    },
+    {
+      "text": "I am not sad anymore",
+      "label": "positive",
+      "rule_prediction": "positive",
+      "oof_prediction": "positive"
+    }
+  ],
+  "limits": [
+    "Fourteen authored examples are too few for broad accuracy conclusions.",
+    "Rules and examples were developed together; the rule score is not held-out accuracy.",
+    "ML vectorization and fitting occur inside each training fold, but the dataset was already used during project development.",
+    "Emoji labels are context-dependent; sarcasm remains a known rule failure."
+  ]
+}

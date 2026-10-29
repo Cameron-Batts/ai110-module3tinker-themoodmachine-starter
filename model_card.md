@@ -1,81 +1,42 @@
-# Model Card: Mood Machine
+# Mood Machine Model Card
 
-## 1. Model Overview
+Cameron Batts
 
-I compared a rule-based classifier with a machine learning classifier.
+## Intended use
 
-Both classify short messages as positive, negative, neutral, or mixed. This is a learning project for exploring how data and modeling choices affect predictions.
+A small text-labeling experiment for exploring explainable rules, failure cases and evaluation. Outputs are positive, negative, neutral or mixed labels for text. They do not establish a person's actual mood, mental health or suitability for a consequential decision.
 
-The rule-based model uses word lists and simple negation. The ML model learns patterns from labeled examples using word counts and logistic regression.
+## Data
 
-## 2. Data
+The original 14 authored examples and labels are retained: six positive, four negative, two neutral and two mixed. They include slang, negation, an emoji, sarcasm and mixed sentiment. Labels reflect interpretation; the laughing emoji was labeled as positive amusement but can mean something else in context. This dataset is not representative of languages, dialects or real-world usage.
 
-The dataset contains 14 posts: the original 6 plus 8 added examples.
+## Rule design
 
-It includes 6 positive, 4 negative, 2 neutral, and 2 mixed labels. The added examples include slang, an emoji, sarcasm, and mixed feelings.
+Positive and negative vocabulary contributes unit signals. An immediate not, never or no reverses the following sentiment signal. Positive and negative signals together produce mixed. Selected emoji signals are now preserved, while custom empty vocabularies remain empty.
 
-I used AI-suggested examples and labels. These labels reflect an interpretation of each message, not an objective measurement of someone's mood. For example, I treated 😂 as positive amusement, but its meaning could change with context.
+The known laughing-emoji failure is fixed under its authored label. The traffic sarcasm example remains incorrectly positive. The rules do not understand intent, longer negation scope or conversational context.
 
-The dataset is small, favors positive examples, and does not represent many languages, dialects, or communication styles.
+## ML design and fold isolation
 
-## 3. Rule-Based Model
+A CountVectorizer and LogisticRegression pipeline is fitted inside each of two shuffled stratified folds with seed 42. Every example is evaluated once while excluded from that fold's fitting data. Vocabulary is never fitted on the held-out fold. Training/test indices and predictions are saved in validation/evaluation.json.
 
-The model lowercases text and extracts words without punctuation. Each positive word adds 1 and each negative word subtracts 1.
+There are only one or a few training examples per class in each fold. Although preprocessing is fold-isolated, the same dataset was already available during project development. This is a development-data estimate, not external validation.
 
-If a mood word immediately follows "not," "never," or "no," its score is reversed. If both positive and negative signals appear, the label is mixed. Otherwise, the score determines positive, negative, or neutral.
+## Current results
 
-This approach is easy to inspect and explain. It correctly handled "I am not happy about this" and "Feeling tired but kind of hopeful."
+| Evaluation | Result | Interpretation |
+|---|---:|---|
+| Rule classifier, 14 known development examples | 13/14 | Checks familiar examples used to develop the rules |
+| ML, out-of-fold predictions across 14 examples | 7/14 | Two-fold estimate on the same tiny development dataset |
+| ML macro F1 | 0.467 | Includes all four labels with zero-division handling |
+| Regression suite | 7 passed | Checks rules and fold isolation, not population accuracy |
 
-It still reads sarcasm literally, ignores emojis, and misses unfamiliar words. Its negation rule only checks the immediately preceding word.
+The earlier rule score was 12/14 before emoji handling. The earlier ML score of 14/14 was training accuracy. These figures have different evaluation conditions and cannot support a general claim that one model is better.
 
-## 4. ML Model
+## Limitations and responsible use
 
-The ML model uses CountVectorizer to turn text into word-count features and LogisticRegression to learn from SAMPLE_POSTS and TRUE_LABELS.
+Sarcasm, ambiguous emoji, unfamiliar wording and dialect variation remain difficult. Labels can misrepresent a person's message. Neither system should diagnose emotions or support consequential decisions about people. Real feedback analysis would require consent, privacy protection, a larger separately labeled evaluation set and review of ambiguous cases.
 
-It was trained and evaluated on the same 14 posts. I did not measure ML performance before expanding the dataset, so I cannot claim how much adding examples changed its accuracy.
+## Next steps
 
-It can learn patterns without a manually written rule for each phrase. However, it ignores word order and can fit a tiny dataset without learning patterns that work reliably on new messages.
-
-The default vectorizer does not represent the laughing emoji. A correct label for that example does not prove the model understood the emoji.
-
-## 5. Evaluation
-
-The rule-based model correctly classified 12 of 14 posts, approximately 86%.
-
-The ML model correctly classified all 14 training posts, giving 100% training accuracy. This was not a held-out test, and the rules were also developed using the sample data. These results do not establish accuracy on new messages.
-
-Correct examples included:
-
-- "I am not happy about this" was negative in both models.
-- "Feeling tired but kind of hopeful" was mixed in both models.
-- "The meeting starts at noon" was neutral in both models.
-
-Rule-based failures included:
-
-- "I absolutely love getting stuck in traffic" was positive instead of the intended sarcastic negative.
-- "😂" was neutral instead of the chosen positive label.
-
-In informal checks, the ML model labeled "I am happy" positive, "I am not happy" negative, and "I am not sad" positive.
-
-It labeled "Great, another delayed train" positive, missing the intended sarcasm. Getting the training sarcasm example right did not mean it could recognize a new sarcastic message.
-
-## 6. Limitations
-
-The dataset is too small to support broad conclusions. Neither model reliably understands context, sarcasm, or a person's actual emotional state.
-
-The rule-based model depends on its vocabulary and simple rules. The ML model may rely on word associations that do not hold outside its training examples.
-
-## 7. Ethical Considerations
-
-Incorrect labels could misrepresent someone's message, especially when slang, dialect, sarcasm, or distress is involved.
-
-Personal messages should be handled with consent and privacy protections. This classroom model should not be used to diagnose mental health or make consequential decisions about people.
-
-## 8. Ideas for Improvement
-
-- Add more varied examples and more neutral and mixed posts.
-- Use a separate test set that is not used to develop rules or train the ML model.
-- Review ambiguous labels with multiple people.
-- Preserve emojis and improve negation handling.
-- Try phrase features that retain some word-order information.
-- Compare errors across different writing styles.
+Collect a separate evaluation set before further model tuning; use multiple labelers where interpretation is ambiguous; compare error categories and class-level recall rather than emphasizing an attractive training score.

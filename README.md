@@ -1,67 +1,50 @@
-# The Mood Machine
+# Mood Machine
 
-The Mood Machine is a simple text classifier that begins with a rule based approach and can optionally be extended with a small machine learning model. It tries to guess whether a short piece of text sounds **positive**, **negative**, **neutral**, or even **mixed** based on patterns in your data.
+Cameron Batts
 
-This lab gives you hands on experience with how basic systems work, where they break, and how different modeling choices affect fairness and accuracy. You will edit code, add data, run experiments, and write a short model card reflection.
+An explainable text-classification experiment comparing word/emoji rules with a small bag-of-words logistic-regression model. The labels describe authored examples, not a person's actual emotional state.
 
----
-
-## Repo Structure
-
-```plaintext
-├── dataset.py         # Starter word lists and example posts (you will expand these)
-├── mood_analyzer.py   # Rule based classifier with TODOs to improve
-├── main.py            # Runs the rule based model and interactive demo
-├── ml_experiments.py  # (New) A tiny ML classifier using scikit-learn
-├── model_card.md      # Template to fill out after experimenting
-└── requirements.txt   # Dependencies for optional ML exploration
-```
-
----
-
-## Getting Started
-
-1. Open this folder in VS Code.
-2. Make sure your Python environment is active.
-3. Install dependencies:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. Run the rule-based starter:
-
-    ```bash
-    python main.py
-    ```
-
-If pieces of the analyzer are not implemented yet, you will see helpful errors that guide you to the TODOs.
-
-To try the ML model later, run:
+## Current evaluation
 
 ```bash
-python ml_experiments.py
+python3 -m pip install -r requirements.txt
+python3 evaluate.py --json validation/evaluation.json
+python3 -m pytest -q
 ```
 
----
+Verified results:
 
-## What You Will Do
+```text
+Rule known-sample result: 13/14
+ML out-of-fold result: 7/14
+ML macro F1: 0.467
+7 passed
+```
 
-During this lab you will:
+The rule score is measured on examples used during development. The ML result uses two stratified folds: vocabulary building and model fitting occur inside each training fold, and each example receives one prediction while excluded from that fold's training data. The 14-example dataset was already used during project development, so this is not an independent external validation set. The two metrics have different evaluation conditions and should not be used to declare one approach universally better.
 
-- Implement the missing parts of the rule based `MoodAnalyzer`.
-- Add new positive and negative words.
-- Expand the dataset with more posts, including slang, emojis, sarcasm, or mixed emotions.
-- Observe unusual or incorrect predictions and think about why they happen.
-- Train a tiny machine learning model and compare its behavior to your rule based system.
-- Complete the model card with your findings about data, behavior, limitations, and improvements.
-- The goal is to help you reason about how models behave, how data shapes them, and why even small design choices matter.
+The historical 100% ML figure was training accuracy. It remains a demonstration of fitting, not evidence of generalization.
 
----
+## Rule behavior
 
-## Tips
+The classifier recognizes positive and negative words, selected emoji signals, immediate negation and mixed positive/negative signals. Emoji interpretation depends on context; the authored laughing-emoji example is treated as positive amusement. Sarcasm remains a known failure: the traffic example is still read literally.
 
-- Start with preprocessing before updating scoring rules.
-- When debugging, print tokens, scores, or intermediate choices.
-- Ask an AI assistant to help create edge case posts or unusual wording.
-- Try examples that mislead or confuse your model. Failure cases teach you the most.
+## Interactive exploration
+
+```bash
+python3 main.py
+python3 ml_experiments.py
+```
+
+These commands provide interactive rule and ML demonstrations. Use evaluate.py for the out-of-fold evaluation rather than relying on a training score.
+
+## Files
+
+- mood_analyzer.py: inspectable rules.
+- dataset.py: original 14 labeled examples and vocabularies.
+- evaluate.py: fold-isolated ML evaluation and parseable results.
+- validation/evaluation.json: predictions, confusion matrix, fold indices and limitations.
+- tests/test_evaluation.py: rule and evaluation-isolation regressions.
+- model_card.md: data, bias and interpretation limits.
+
+The original starter's provenance remains visible through this repository's GitHub fork lineage.
